@@ -1,24 +1,41 @@
-# Vagrant::Upload
+# Vagrant Upload Provisioner
 
-TODO: Write a gem description
+This is a Vagrant 1.2+ plugin that adds an Upload provisioner to Vagrant,
+allowing you to provision files to your guest via rsync.
+
+Can be handy when you need to transfer files before applying another provisioner.
+E.g.: When you need to transfer puppet certificates to your guest before
+appying puppet server provisionning.
+
+*NOTE:* This plugin requires Vagrant 1.2+
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-    gem 'vagrant-upload'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install vagrant-upload
+```
+$ vagrant plugin install vagrant-upload
+```
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+Vagrant.configure("2") do |config|
+
+  config.vm.box = "box"
+
+  config.vm.provision :upload, files: [{
+    host: '~/.bin/*',
+    guest: '/home/username/.bin'
+  }]
+
+end
+```
+
+## Configuration
+
+This provisioner exposes one option:
+
+* `files` - An array of hashes which specifies which host files you want to
+  transfer to the guest like shown in the Usage example.
 
 ## Contributing
 
