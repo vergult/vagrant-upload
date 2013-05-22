@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Axel Vergult"]
   spec.email         = ["axel.vergult@gmail.com"]
   spec.description   = %q{Upload Provisioner}
-  spec.summary       = %q{Provision files to guest via rsync}
+  spec.summary       = %q{Provide files to guest via rsync}
   spec.homepage      = ""
   spec.license       = "MIT"
 
