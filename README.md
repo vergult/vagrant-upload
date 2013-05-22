@@ -1,7 +1,7 @@
 # Vagrant Upload Provisioner
 
 This is a Vagrant 1.2+ plugin that adds an Upload provisioner to Vagrant,
-allowing you to provision files to your guest via rsync.
+allowing you to provide files to your guest via rsync.
 
 Can be handy when you need to transfer files before applying another provisioner.
 E.g.: When you need to transfer puppet certificates to your guest before
