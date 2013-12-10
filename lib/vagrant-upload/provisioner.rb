@@ -4,14 +4,20 @@ module VagrantPlugins
 
       def provision
         config.files.each do |args|
-        case config.method
-        when :rsync
-          @machine.env.ui.info rsync_cmd(args[:host], args[:guest])
-          system rsync_cmd(args[:host], args[:guest])
-        when :scp
-          @machine.env.ui.info scp_cmd(args[:host], args[:guest])
-          system scp_cmd(args[:host], args[:guest])
-        end
+          case config.method
+          when :rsync
+            command = rsync_cmd(args[:host], args[:guest])
+          when :scp
+            command = scp_cmd(args[:host], args[:guest])
+          end
+          @machine.env.ui.info command
+          res = Vagrant::Util::Subprocess.execute(*command)
+          if res.exit_code != 0
+            raise Errors::UploadError,
+                :guestpath => args[:guest],
+                :hostpath  => args[:host],
+                :stder     => res.stderr
+          end
         end
       end
 
@@ -19,29 +25,24 @@ module VagrantPlugins
 
       def rsync_cmd(host_path, guest_path)
         rsync_opts = "--rsync-path='sudo rsync'"
-        ssh_opts   =  "-i #{@machine.ssh_info[:private_key_path]} " <<
-                      "-p #{@machine.ssh_info[:port]} " <<
-                      "-l #{@machine.ssh_info[:username]} " <<
-                      "-o StrictHostKeyChecking=no " <<
-                      "-o UserKnownHostsFile=/dev/null " <<
-                      "-o IdentitiesOnly=yes " <<
-                      "-o LogLevel=ERROR"
-
-        "rsync -av --partial #{rsync_opts} -e 'ssh #{ssh_opts}' #{host_path} #{@machine.ssh_info[:host]}:#{guest_path}"
+        ssh_opts   = ssh_common_opts.push("-l #{@machine.ssh_info[:username]}").join(' ')
+        ["rsync","-av","--partial","#{rsync_opts}", "-e","'ssh #{ssh_opts}'",
+                 "#{host_path}", "#{@machine.ssh_info[:host]}:#{guest_path}"]
       end
 
       def scp_cmd(host_path, guest_path)
-        scp_opts   =  "-i #{@machine.ssh_info[:private_key_path]} " <<
-                      "-p #{@machine.ssh_info[:port]} " <<
-                      "-r" <<
-                      "-o StrictHostKeyChecking=no " <<
-                      "-o UserKnownHostsFile=/dev/null " <<
-                      "-o IdentitiesOnly=yes " <<
-                      "-o LogLevel=ERROR"
-
-        "scp #{scp_opts} #{host_path} #{@machine.ssh_info[:username]}@#{@machine.ssh_info[:host]}:#{guest_path}"
+        ["scp"] + ssh_common_opts +
+        ["-r", "#{host_path}", "#{@machine.ssh_info[:username]}@#{@machine.ssh_info[:host]}:#{guest_path}"]
       end
 
+      def ssh_common_opts
+        ["-i #{@machine.ssh_info[:private_key_path]}",
+         "-p #{@machine.ssh_info[:port]}",
+         "-o StrictHostKeyChecking=no",
+         "-o UserKnownHostsFile=/dev/null",
+         "-o IdentitiesOnly=yes",
+         "-o LogLevel=ERROR"]
+      end
     end
   end
 end

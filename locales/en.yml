@@ -1,0 +1,5 @@
+en:
+  vagrant_upload:
+    errors:
+      upload_error: |-
+        Vagrant upload got error.
