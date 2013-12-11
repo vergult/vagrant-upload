@@ -22,11 +22,13 @@ Vagrant.configure("2") do |config|
 
   config.vm.box = "box"
 
-  config.vm.provision :upload, files: [{
-    host: '~/.bin/*',
-    guest: '/home/username/.bin'
-  }]
-
+  config.vm.provision :upload do |upload|
+    upload.files = [{
+      host: '~/.bin/*',
+      guest: '/home/username/.bin'
+    }]
+    upload.method = :rsync
+  end
 end
 ```
 
@@ -36,6 +38,8 @@ This provisioner exposes one option:
 
 * `files` - An array of hashes which specifies which host files you want to
   transfer to the guest like shown in the Usage example.
+* `method` - method to use to upload files. Now you can use `rsync` and `scp`.
+  Default: rsync
 
 ## Contributing
 

@@ -1,0 +1,6 @@
+en:
+  vagrant_upload:
+    errors:
+      upload_error: |-
+        Fail to upload from %{hostpath} to %{guestpath}
+        %{stder}
