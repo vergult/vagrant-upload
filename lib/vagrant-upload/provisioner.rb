@@ -13,7 +13,7 @@ module VagrantPlugins
           @machine.env.ui.info command
           res = Vagrant::Util::Subprocess.execute(*command)
           if res.exit_code != 0
-            raise Errors::UploadError,
+            raise Upload::Errors::UploadError,
                 :guestpath => args[:guest],
                 :hostpath  => args[:host],
                 :stder     => res.stderr

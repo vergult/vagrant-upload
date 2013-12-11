@@ -2,4 +2,5 @@ en:
   vagrant_upload:
     errors:
       upload_error: |-
-        Vagrant upload got error.
+        Fail to upload from %{hostpath} to %{guestpath}
+        %{stder}

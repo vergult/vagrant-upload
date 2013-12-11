@@ -25,8 +25,15 @@ module VagrantPlugins
       end
 
       provisioner(:upload) do
+        setup_i18n
         require_relative 'provisioner'
         Provisioner
+      end
+
+      # This initializes the internationalization strings.
+      def self.setup_i18n
+        I18n.load_path << File.expand_path("locales/en.yml", Upload.source_root)
+        I18n.reload!
       end
 
     end
